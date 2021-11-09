@@ -4,7 +4,7 @@ from telebot import types
 
 from my_tokens import owm_token, telebot_token
 from text_blocks import hello, temp_minus_25, temp_minus_15, temp_minus_5, temp_zero, temp_10, temp_17, temp_24, \
-    temp_35, temp_60, keyboard_text
+    temp_35, temp_60, keyboard_text, thanks, forecast_none, forecast_snow, forecast_rain
 
 owm = OWM(owm_token)
 mgr = owm.weather_manager()
@@ -48,6 +48,8 @@ def send_info(message):
         answer += temp_60
     if 'rain' in status:
         answer += '\n\n' + 'Там дождь, бери зонтик'
+    if 'snow' in status:
+        answer += '\n\n' + 'Там снег, а значит плохая видимость - пригодятся туристические очки'
     bot.send_message(message.chat.id, answer)
 
     keyboard = types.InlineKeyboardMarkup()
@@ -71,11 +73,13 @@ def callback_worker(call):
                 break
         a = str(somelist)
         if 'rain' in a:
-            bot.send_message(call.message.chat.id, 'В ближайшие часы ожидается дождь, не забудь зонтик')
+            bot.send_message(call.message.chat.id, forecast_rain)
+        if 'snow' in a:
+            bot.send_message(call.message.chat.id, forecast_snow)
         else:
-            bot.send_message(call.message.chat.id, 'В ближайшие часы дождь не ожидается')
+            bot.send_message(call.message.chat.id, forecast_none)
     if call.data == 'no':
-        bot.send_message(call.message.chat.id, 'Надеюсь, я помог тебе. Если что - обращайся :)')
+        bot.send_message(call.message.chat.id, thanks)
 
 
 bot.infinity_polling()
